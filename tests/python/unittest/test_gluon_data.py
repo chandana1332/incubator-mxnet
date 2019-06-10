@@ -28,6 +28,7 @@ from mxnet.gluon.data import DataLoader
 import mxnet.ndarray as nd
 from mxnet import context
 from mxnet.gluon.data.dataset import Dataset
+from mxnet.gluon.data.dataset import ArrayDataset
 
 @with_seed()
 def test_array_dataset():
@@ -278,6 +279,26 @@ def test_dataloader_context():
                                     pin_device_id=custom_dev_id)
     for _, x in enumerate(loader3):
         assert x.context == context.cpu_pinned(custom_dev_id)
+
+def batchify(a):
+    return a
+
+def test_dataloader_scope():
+
+    args = {'num_workers': 1, 'batch_size': 2}
+    dataset = nd.ones(5)
+    iterator = iter(DataLoader(
+            dataset,
+            batchify_fn=batchify,
+            **args
+        )
+    )
+
+    item = next(iterator)
+
+    assert item is not None
+
+
 
 
 if __name__ == '__main__':
